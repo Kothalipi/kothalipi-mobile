@@ -1,0 +1,24 @@
+name: Kothalipi
+options:
+  bundleIdPrefix: com.kothalipi
+settings:
+  base:
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    SWIFT_VERSION: "5.0"
+targets:
+  Kothalipi:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: Kothalipi
+    settings:
+      base:
+        PRODUCT_NAME: Kothalipi
+        PRODUCT_BUNDLE_IDENTIFIER: com.kothalipi.mobile
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "Kothalipi needs microphone access for voice dictation"
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGN_IDENTITY: ""
