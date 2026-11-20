@@ -32,7 +32,7 @@ jobs:
         run: |
           TAG="${{ steps.get-tag.outputs.tag }}"
           gh release create "$TAG" \
-            --title "Kothalipi Mobile $TAG (Android & iOS)" \
+            --title "Kothalipi Mobile $TAG (Android APK & iOS IPA)" \
             --notes "### Kothalipi Mobile $TAG (Wispr Flow Edition)
             - **Wispr Flow Floating Bubble (Android):** Dictate from anywhere without switching keyboards.
             - **Voice Keyboard Extension (Android & iOS):** Voice typing directly in WhatsApp, Messenger, Notes, etc.
@@ -55,39 +55,44 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26b
+          add-to-path: true
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android,x86_64-linux-android
 
-      - name: Build Rust Core
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
+
+      - name: Build Rust Core with cargo-ndk
         run: |
           cd core
           cargo build --release --bin uniffi-bindgen
-          cargo build --release --target aarch64-linux-android
-          cargo build --release --target x86_64-linux-android
-
-          # Prepare JNI libs
-          mkdir -p ../android/app/src/main/jniLibs/arm64-v8a
-          mkdir -p ../android/app/src/main/jniLibs/x86_64
-          cp target/aarch64-linux-android/release/libkothalipi_core.so ../android/app/src/main/jniLibs/arm64-v8a/
-          cp target/x86_64-linux-android/release/libkothalipi_core.so ../android/app/src/main/jniLibs/x86_64/
+          cargo ndk -t arm64-v8a -t x86_64 -o ../android/app/src/main/jniLibs build --release
 
           # Generate Kotlin bindings
           cargo run --release --bin uniffi-bindgen generate \
-            --library target/aarch64-linux-android/release/libkothalipi_core.so \
+            --library ../android/app/src/main/jniLibs/arm64-v8a/libkothalipi_core.so \
             --language kotlin \
             --out-dir ../android/app/src/main/java
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build Android APK
         run: |
           cd android
-          chmod +x gradlew 2>/dev/null || gradle wrapper || true
-          # Build APK with gradle
-          gradle assembleRelease || gradle assembleDebug
+          gradle wrapper || true
+          chmod +x gradlew || true
+          ./gradlew assembleDebug || gradle assembleDebug
 
           mkdir -p ../dist
-          cp app/build/outputs/apk/*/*.apk ../dist/Kothalipi-v0.1.0.apk 2>/dev/null || \
+          cp app/build/outputs/apk/debug/*.apk ../dist/Kothalipi-v0.1.0.apk 2>/dev/null || \
           find app/build -name "*.apk" -exec cp {} ../dist/Kothalipi-v0.1.0.apk \;
 
       - name: Upload APK to Release
