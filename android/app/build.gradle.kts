@@ -52,5 +52,5 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.net.java.dev.jna)
+    implementation("net.java.dev.jna:jna:5.14.0@aar")
 }

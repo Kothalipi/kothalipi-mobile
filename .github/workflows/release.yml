@@ -83,13 +83,13 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: "8.7"
 
       - name: Build Android APK
         run: |
           cd android
-          gradle wrapper || true
-          chmod +x gradlew || true
-          ./gradlew assembleDebug || gradle assembleDebug
+          gradle assembleDebug --stacktrace
 
           mkdir -p ../dist
           cp app/build/outputs/apk/debug/*.apk ../dist/Kothalipi-v0.1.0.apk 2>/dev/null || \
