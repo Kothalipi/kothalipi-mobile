@@ -99,12 +99,12 @@ impl KothalipiMobileEngine {
         })
     }
 
-    /// End-to-end recording processing pipeline
-    pub fn process_recording(
+    /// End-to-end recording processing pipeline with specific mode ("bn", "en", "bn_to_en")
+    pub fn process_recording_with_mode(
         &self,
         audio_bytes: Vec<u8>,
         mime_type: String,
-        translate_to_english: bool,
+        mode: String,
         enable_smart_polish: bool,
     ) -> Result<ProcessResult, EngineError> {
         let key = self.get_api_key();
@@ -113,24 +113,23 @@ impl KothalipiMobileEngine {
 
         rt.block_on(async {
             let (raw_text, detected_language) =
-                cloud_stt::transcribe_gemini(&key, &audio_bytes, &mime_type).await?;
+                cloud_stt::transcribe_gemini_with_mode(&key, &audio_bytes, &mime_type, &mode).await?;
 
-            let has_bangla = translation::contains_bangla(&raw_text);
-
-            if translate_to_english && has_bangla {
-                let translated = translation::translate_bangla_to_english(&key, &raw_text).await?;
+            if mode == "bn_to_en" {
                 Ok(ProcessResult {
+                    processed_text: raw_text.clone(),
                     raw_text,
-                    processed_text: translated,
                     was_translated: true,
                     was_polished: false,
-                    detected_language,
+                    detected_language: "en".to_string(),
                 })
             } else if enable_smart_polish {
-                let polished = polish::smart_polish(&key, &raw_text, &detected_language).await?;
+                let polished = polish::smart_polish(&key, &raw_text, &detected_language)
+                    .await
+                    .unwrap_or_else(|_| raw_text.clone());
                 Ok(ProcessResult {
-                    raw_text,
                     processed_text: polished,
+                    raw_text,
                     was_translated: false,
                     was_polished: true,
                     detected_language,
@@ -145,6 +144,18 @@ impl KothalipiMobileEngine {
                 })
             }
         })
+    }
+
+    /// End-to-end recording processing pipeline
+    pub fn process_recording(
+        &self,
+        audio_bytes: Vec<u8>,
+        mime_type: String,
+        translate_to_english: bool,
+        enable_smart_polish: bool,
+    ) -> Result<ProcessResult, EngineError> {
+        let mode = if translate_to_english { "bn_to_en" } else { "bn" };
+        self.process_recording_with_mode(audio_bytes, mime_type, mode.to_string(), enable_smart_polish)
     }
 
     /// Calculate RMS amplitude for real-time waveform visualizers (0.0 to 1.0)

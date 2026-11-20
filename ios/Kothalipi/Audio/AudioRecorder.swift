@@ -78,23 +78,26 @@ class KothalipiEngineManager: ObservableObject {
         self.apiKey = UserDefaults.standard.string(forKey: apiKeyDefaultsKey) ?? ""
     }
 
-    func processRecording(wavData: Data, translateToEnglish: Bool) async throws -> String {
-        // Rust Core UniFFI Invocation
-        // Once the XCFramework is compiled, KothalipiMobileEngine is available directly:
-        // let engine = KothalipiMobileEngine(apiKey: apiKey)
-        // let result = try engine.processRecording(audioBytes: [UInt8](wavData), mimeType: "audio/wav", translateToEnglish: translateToEnglish, enableSmartPolish: true)
-        // return result.processedText
-
-        // Fallback or native implementation while framework compiles:
-        return try await fallbackProcess(wavData: wavData, translateToEnglish: translateToEnglish)
+    func processRecording(wavData: Data, mode: String) async throws -> String {
+        return try await fallbackProcess(wavData: wavData, mode: mode)
     }
 
-    private func fallbackProcess(wavData: Data, translateToEnglish: Bool) async throws -> String {
-        // Direct bridge matching Rust logic
+    func processRecording(wavData: Data, translateToEnglish: Bool) async throws -> String {
+        let mode = translateToEnglish ? "bn_to_en" : "bn"
+        return try await fallbackProcess(wavData: wavData, mode: mode)
+    }
+
+    private func fallbackProcess(wavData: Data, mode: String) async throws -> String {
         let b64 = wavData.base64EncodedString()
-        let prompt = translateToEnglish
-            ? "Translate this spoken audio directly into natural, fluent English. Output ONLY the English text."
-            : "Transcribe this spoken audio verbatim in Bengali. Output ONLY the words."
+        let prompt: String
+        switch mode {
+        case "en":
+            prompt = "Transcribe this spoken audio verbatim in English only. Output ONLY the English words with proper punctuation and capitalization."
+        case "bn_to_en":
+            prompt = "Translate this spoken Bengali (Bangla) audio directly into natural, fluent English. Output ONLY the translated English text with proper punctuation and capitalization."
+        default:
+            prompt = "Transcribe this spoken audio verbatim in Bengali script (বাংলা হরফে). Output ONLY the Bangla text with proper punctuation. Do not translate."
+        }
 
         let body: [String: Any] = [
             "contents": [
@@ -108,20 +111,34 @@ class KothalipiEngineManager: ObservableObject {
             "generationConfig": ["temperature": 0.0]
         ]
 
-        let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=\(apiKey)")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let models = ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-flash-latest"]
+        var lastErr = ""
 
-        let (data, _) = try await URLSession.shared.data(for: request)
-        if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let candidates = json["candidates"] as? [[String: Any]],
-           let content = candidates.first?["content"] as? [String: Any],
-           let parts = content["parts"] as? [[String: Any]],
-           let text = parts.first?["text"] as? String {
-            return text.trimmingCharacters(in: .whitespacesAndNewlines)
+        for model in models {
+            guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/\(model):generateContent?key=\(apiKey)") else { continue }
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+            do {
+                let (data, response) = try await URLSession.shared.data(for: request)
+                if let httpResp = response as? HTTPURLResponse, httpResp.statusCode == 200 {
+                    if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let candidates = json["candidates"] as? [[String: Any]],
+                       let content = candidates.first?["content"] as? [String: Any],
+                       let parts = content["parts"] as? [[String: Any]],
+                       let text = parts.first?["text"] as? String {
+                        return text.trimmingCharacters(in: .whitespacesAndNewlines)
+                    }
+                } else if let httpResp = response as? HTTPURLResponse {
+                    lastErr = "HTTP \(httpResp.statusCode)"
+                }
+            } catch {
+                lastErr = error.localizedDescription
+            }
         }
-        return ""
+
+        throw NSError(domain: "Kothalipi", code: -1, userInfo: [NSLocalizedDescriptionKey: "Gemini সার্ভিস পাওয়া যায়নি: \(lastErr)"])
     }
 }

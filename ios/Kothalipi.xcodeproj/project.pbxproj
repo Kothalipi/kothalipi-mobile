@@ -1,0 +1,336 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		41625A9592D89E652C904D2F /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D16298B05E7A51CA94A7BE /* HomeView.swift */; };
+		A19A1BAAB2B317A44D1B1DBA /* KothalipiShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BD18114CDA03A3C23C324C /* KothalipiShortcuts.swift */; };
+		A60EFDFFF061B568A32F4BE5 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E24BE7A7742480080949A5 /* AudioRecorder.swift */; };
+		CDCB1C6E833F00735C8B3B77 /* KothalipiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D2B2544147387379076539 /* KothalipiApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		26E24BE7A7742480080949A5 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
+		6276C39B378AC7E65593F6CE /* Kothalipi.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Kothalipi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		63D2B2544147387379076539 /* KothalipiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KothalipiApp.swift; sourceTree = "<group>"; };
+		70D16298B05E7A51CA94A7BE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		85BD18114CDA03A3C23C324C /* KothalipiShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KothalipiShortcuts.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1605F02741731117EDA82E8A /* Kothalipi */ = {
+			isa = PBXGroup;
+			children = (
+				D4A811606DE9B530F838C3DE /* App */,
+				5D368A331D5D39F258895DC9 /* Audio */,
+				B0758576CB65E3E29665D495 /* Intents */,
+				6713FF2D138A7650CF1EA7CD /* Views */,
+			);
+			path = Kothalipi;
+			sourceTree = "<group>";
+		};
+		5D368A331D5D39F258895DC9 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				26E24BE7A7742480080949A5 /* AudioRecorder.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		6713FF2D138A7650CF1EA7CD /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				70D16298B05E7A51CA94A7BE /* HomeView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A03A55E7E427FEF48454D38E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6276C39B378AC7E65593F6CE /* Kothalipi.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A2003A512832312ACA8B75E7 = {
+			isa = PBXGroup;
+			children = (
+				1605F02741731117EDA82E8A /* Kothalipi */,
+				A03A55E7E427FEF48454D38E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B0758576CB65E3E29665D495 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				85BD18114CDA03A3C23C324C /* KothalipiShortcuts.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		D4A811606DE9B530F838C3DE /* App */ = {
+			isa = PBXGroup;
+			children = (
+				63D2B2544147387379076539 /* KothalipiApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2FC29D4902BA025E089CBB65 /* Kothalipi */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5AB7F8722A65E8B47EE04DE7 /* Build configuration list for PBXNativeTarget "Kothalipi" */;
+			buildPhases = (
+				8C1C9806E176C145259CCB0E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Kothalipi;
+			packageProductDependencies = (
+			);
+			productName = Kothalipi;
+			productReference = 6276C39B378AC7E65593F6CE /* Kothalipi.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C32F8CB6623536905A835EC7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 0C302932BB07B1D9A5FB6A79 /* Build configuration list for PBXProject "Kothalipi" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = A2003A512832312ACA8B75E7;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A03A55E7E427FEF48454D38E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2FC29D4902BA025E089CBB65 /* Kothalipi */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8C1C9806E176C145259CCB0E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A60EFDFFF061B568A32F4BE5 /* AudioRecorder.swift in Sources */,
+				41625A9592D89E652C904D2F /* HomeView.swift in Sources */,
+				CDCB1C6E833F00735C8B3B77 /* KothalipiApp.swift in Sources */,
+				A19A1BAAB2B317A44D1B1DBA /* KothalipiShortcuts.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0BB1C297EAAEA51AD3F9F83A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Kothalipi needs microphone access for voice dictation";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kothalipi.mobile;
+				PRODUCT_NAME = Kothalipi;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		345F77F6E815D692DA3A7EA8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		5DB114DF63660521583E8371 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		798F372E9657448EA8CAE1CB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Kothalipi needs microphone access for voice dictation";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kothalipi.mobile;
+				PRODUCT_NAME = Kothalipi;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0C302932BB07B1D9A5FB6A79 /* Build configuration list for PBXProject "Kothalipi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				345F77F6E815D692DA3A7EA8 /* Debug */,
+				5DB114DF63660521583E8371 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5AB7F8722A65E8B47EE04DE7 /* Build configuration list for PBXNativeTarget "Kothalipi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0BB1C297EAAEA51AD3F9F83A /* Debug */,
+				798F372E9657448EA8CAE1CB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C32F8CB6623536905A835EC7 /* Project object */;
+}

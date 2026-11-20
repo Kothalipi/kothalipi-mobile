@@ -2,11 +2,12 @@ use std::time::Duration;
 use base64::Engine;
 use crate::EngineError;
 
-/// Performs speech-to-text transcription via Google Gemini API
-pub async fn transcribe_gemini(
+/// Performs speech-to-text transcription via Google Gemini API with specific language mode
+pub async fn transcribe_gemini_with_mode(
     api_key: &str,
     audio_bytes: &[u8],
     mime_type: &str,
+    mode: &str, // "bn", "en", "bn_to_en"
 ) -> Result<(String, String), EngineError> {
     if api_key.trim().is_empty() {
         return Err(EngineError::BadApiKey {
@@ -23,8 +24,24 @@ pub async fn transcribe_gemini(
     let b64_audio = base64::engine::general_purpose::STANDARD.encode(audio_bytes);
     let effective_mime = if mime_type.is_empty() { "audio/wav" } else { mime_type };
 
-    let prompt = "Transcribe the spoken audio verbatim in its original spoken language (primarily Bengali / Bangla or English). \
-                  Output ONLY the transcribed words with proper punctuation. Do not translate, explain, or add commentary.";
+    let prompt = match mode {
+        "en" => {
+            "Transcribe the spoken audio verbatim in English only. \
+             Output ONLY the transcribed English words with proper punctuation and capitalization. \
+             Do not translate, explain, or add commentary."
+        }
+        "bn_to_en" => {
+            "Translate this spoken Bengali (Bangla) audio directly into natural, fluent, and polished English. \
+             Output ONLY the translated English text with proper punctuation and capitalization. \
+             Do not add quotes, explanations, or commentary."
+        }
+        _ => {
+            // "bn" default
+            "Transcribe the spoken audio verbatim in Bengali script (বাংলা হরফে). \
+             Output ONLY the transcribed Bengali words with proper punctuation (যেমন দাঁড়ি, কমা). \
+             Do not translate into English or use Roman letters. Do not add commentary."
+        }
+    };
 
     let payload = serde_json::json!({
         "contents": [
@@ -46,11 +63,17 @@ pub async fn transcribe_gemini(
     });
 
     let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(20))
+        .timeout(Duration::from_secs(25))
         .build()
         .map_err(|e| EngineError::NetworkError { detail: e.to_string() })?;
 
-    let models = ["gemini-3.5-transcribe", "gemini-2.5-flash", "gemini-flash-latest"];
+    // High availability modern models in priority order
+    let models = [
+        "gemini-flash-lite-latest",
+        "gemini-3.5-flash-lite",
+        "gemini-3.8-flash",
+        "gemini-flash-latest",
+    ];
     let mut last_error = String::new();
 
     for model in models {
@@ -72,7 +95,9 @@ pub async fn transcribe_gemini(
                     let json: serde_json::Value = resp.json().await.map_err(|e| EngineError::NetworkError { detail: e.to_string() })?;
                     if let Some(text) = json["candidates"][0]["content"]["parts"][0]["text"].as_str() {
                         let cleaned = text.trim().to_string();
-                        let language = if cleaned.chars().any(|c| ('\u{0980}'..='\u{09FF}').contains(&c)) {
+                        let language = if mode == "en" || mode == "bn_to_en" {
+                            "en"
+                        } else if cleaned.chars().any(|c| ('\u{0980}'..='\u{09FF}').contains(&c)) {
                             "bn"
                         } else {
                             "en"
@@ -98,4 +123,13 @@ pub async fn transcribe_gemini(
     Err(EngineError::NetworkError {
         detail: format!("Transcription failed on all Gemini models: {}", last_error),
     })
+}
+
+/// Performs speech-to-text transcription via Google Gemini API (default Bangla mode)
+pub async fn transcribe_gemini(
+    api_key: &str,
+    audio_bytes: &[u8],
+    mime_type: &str,
+) -> Result<(String, String), EngineError> {
+    transcribe_gemini_with_mode(api_key, audio_bytes, mime_type, "bn").await
 }

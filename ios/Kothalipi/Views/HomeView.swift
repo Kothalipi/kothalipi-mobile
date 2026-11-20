@@ -7,7 +7,7 @@ struct HomeView: View {
     @State private var isRecording = false
     @State private var statusText = "কথা বলতে মাইক চাপুন"
     @State private var resultText = ""
-    @State private var translateToEnglish = false
+    @State private var dictationMode = "bn" // "bn", "en", "bn_to_en"
     @State private var showSettings = false
     @State private var apiKeyInput = ""
 
@@ -55,33 +55,11 @@ struct HomeView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
 
-                // Wispr Flow Mode Pill Switcher
-                HStack(spacing: 0) {
-                    Button(action: {
-                        hapticFeedback.impactOccurred()
-                        translateToEnglish = false
-                    }) {
-                        Text("🇧🇩 বাংলা")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white)
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 18)
-                            .background(!translateToEnglish ? LinearGradient(colors: [Color(hex: "8A2BE2"), Color(hex: "7C3AED")], startPoint: .leading, endPoint: .trailing) : LinearGradient(colors: [Color.clear], startPoint: .leading, endPoint: .trailing))
-                            .cornerRadius(18)
-                    }
-
-                    Button(action: {
-                        hapticFeedback.impactOccurred()
-                        translateToEnglish = true
-                    }) {
-                        Text("বাংলা ➔ 🇬🇧 English")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white)
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 18)
-                            .background(translateToEnglish ? LinearGradient(colors: [Color(hex: "8A2BE2"), Color(hex: "EC4899")], startPoint: .leading, endPoint: .trailing) : LinearGradient(colors: [Color.clear], startPoint: .leading, endPoint: .trailing))
-                            .cornerRadius(18)
-                    }
+                // Wispr Flow 3-Mode Pill Switcher
+                HStack(spacing: 2) {
+                    modeButton(title: "🇧🇩 বাংলা", mode: "bn")
+                    modeButton(title: "🇬🇧 English", mode: "en")
+                    modeButton(title: "বাংলা ➔ 🇬🇧 EN", mode: "bn_to_en")
                 }
                 .padding(4)
                 .background(Color(hex: "141220"))
@@ -118,7 +96,7 @@ struct HomeView: View {
                                     Image(systemName: isRecording ? "stop.fill" : "mic.fill")
                                         .font(.system(size: 42))
                                         .foregroundColor(.white)
-                                )
+                                    )
                         }
                     }
 
@@ -135,6 +113,8 @@ struct HomeView: View {
                     Text(statusText)
                         .font(.system(size: 15, weight: .medium))
                         .foregroundColor(Color(hex: "9E9EA7"))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
                 }
 
                 Spacer()
@@ -195,6 +175,32 @@ struct HomeView: View {
         }
     }
 
+    @ViewBuilder
+    private func modeButton(title: String, mode: String) -> some View {
+        Button(action: {
+            hapticFeedback.impactOccurred()
+            dictationMode = mode
+        }) {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(.white)
+                .padding(.vertical, 9)
+                .padding(.horizontal, 13)
+                .background(
+                    dictationMode == mode
+                        ? LinearGradient(
+                            colors: mode == "bn_to_en"
+                                ? [Color(hex: "8A2BE2"), Color(hex: "EC4899")]
+                                : [Color(hex: "8A2BE2"), Color(hex: "7C3AED")],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                        : LinearGradient(colors: [Color.clear], startPoint: .leading, endPoint: .trailing)
+                )
+                .cornerRadius(18)
+        }
+    }
+
     private func toggleRecording() {
         hapticFeedback.impactOccurred()
 
@@ -202,7 +208,13 @@ struct HomeView: View {
             manager.audioRecorder.startRecording { success in
                 if success {
                     isRecording = true
-                    statusText = translateToEnglish ? "শুনছি… ইংরেজিতে অনুবাদ হবে" : "শুনছি… বলুন"
+                    if dictationMode == "bn_to_en" {
+                        statusText = "শুনছি… ইংরেজিতে অনুবাদ হবে"
+                    } else if dictationMode == "en" {
+                        statusText = "Listening… Speak in English"
+                    } else {
+                        statusText = "শুনছি… বাংলায় বলুন"
+                    }
                 } else {
                     statusText = "মাইক্রোফোন পারমিশন প্রয়োজন"
                 }
@@ -220,7 +232,7 @@ struct HomeView: View {
                 do {
                     let result = try await manager.processRecording(
                         wavData: wavData,
-                        translateToEnglish: translateToEnglish
+                        mode: dictationMode
                     )
                     await MainActor.run {
                         resultText = result
@@ -229,7 +241,9 @@ struct HomeView: View {
                     }
                 } catch {
                     await MainActor.run {
-                        statusText = "এরর: \(error.localizedDescription)"
+                        let cleanErr = error.localizedDescription
+                            .replacingOccurrences(of: manager.apiKey, with: "••••")
+                        statusText = "এরর: \(cleanErr)"
                     }
                 }
             }
@@ -266,7 +280,10 @@ struct SettingsSheet: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Google Gemini API Key"), footer: Text("আপনার ব্যক্তিগত ফ্রি Gemini API Key প্রবেশ করান। এটি ডিভাইসেই সংরক্ষিত থাকবে।")) {
+                Section(
+                    header: Text("Google Gemini API Key"),
+                    footer: Text("আপনার ব্যক্তিগত ফ্রি Gemini API Key দিন। aistudio.google.com/apikey থেকে সহজেই ফ্রি কি পাবেন। এটি আপনার ডিভাইসেই সম্পূর্ণ নিরাপদ ও এনক্রিপ্টেড থাকবে।")
+                ) {
                     SecureField("AIzaSy...", text: $apiKey)
                 }
             }
@@ -307,4 +324,3 @@ extension Color {
         )
     }
 }
-

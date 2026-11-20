@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -54,15 +55,35 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+fun sanitizeErrorMessage(raw: String?): String {
+    if (raw == null) return "অপ্রত্যাশিত এরর ঘটেছে। আবার চেষ্টা করুন।"
+    val lower = raw.lowercase()
+    return when {
+        lower.contains("503") || lower.contains("unavailable") || lower.contains("high demand") ->
+            "Google Gemini সার্ভারে সাময়িক চাপ রয়েছে। কয়েক সেকেন্ড পর আবার চেষ্টা করুন।"
+        lower.contains("429") || lower.contains("resource_exhausted") || lower.contains("quota") ->
+            "দৈনিক ফ্রি কোটা শেষ হয়েছে। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।"
+        lower.contains("400") || lower.contains("403") || lower.contains("badapikey") || lower.contains("invalid") ->
+            "ভুল বা অকার্যকর API Key! দয়া করে সেটিংস থেকে সঠিক Gemini Key দিন।"
+        lower.contains("empty") || lower.contains("invalidaudio") ->
+            "কোনো কথা শোনা যায়নি। অনুগ্রহ করে মাইক্রোফোনে স্পষ্ট করে বলুন।"
+        lower.contains("timeout") || lower.contains("network") || lower.contains("connection") ->
+            "ইন্টারনেট সংযোগ চেক করুন এবং পুনরায় চেষ্টা করুন।"
+        else -> "প্রসেসিং ব্যর্থ হয়েছে। দয়া করে আবার চেষ্টা করুন।"
+    }
+}
+
 @Composable
 fun WisprFlowStyleMainScreen(context: Context) {
     val app = KothalipiApp.instance
     val scope = rememberCoroutineScope()
 
     var isRecording by remember { mutableStateOf(false) }
-    var statusText by remember { mutableStateOf("কথা বলতে ট্যাপ করুন") }
+    var isProcessing by remember { mutableStateOf(false) }
+    var dictationMode by remember { mutableStateOf(app.dictationMode) } // "bn", "en", "bn_to_en"
+    var statusText by remember { mutableStateOf("") }
     var resultText by remember { mutableStateOf("") }
-    var translateToEnglish by remember { mutableStateOf(app.translateToEnglish) }
+    var errorMessage by remember { mutableStateOf("") }
     var showSettingsDialog by remember { mutableStateOf(false) }
     var apiKey by remember { mutableStateOf(app.geminiApiKey) }
 
@@ -77,11 +98,24 @@ fun WisprFlowStyleMainScreen(context: Context) {
         }
     }
 
+    // Default status text based on mode
+    val defaultStatus = when (dictationMode) {
+        "en" -> "Tap mic to speak English"
+        "bn_to_en" -> "মুখে বাংলায় বলুন, ইংরেজিতে টাইপ হবে"
+        else -> "কথা বলতে মাইক ট্যাপ করুন"
+    }
+
+    val activeStatus = when (dictationMode) {
+        "en" -> "Listening… Speak in English"
+        "bn_to_en" -> "শুনছি… ইংরেজিতে অনুবাদ হবে"
+        else -> "শুনছি… বাংলায় বলুন"
+    }
+
     // Wispr Flow Pulse Glow Animation
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = if (isRecording) 1.22f else 1f,
+        targetValue = if (isRecording) 1.25f else 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(700, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
@@ -96,7 +130,7 @@ fun WisprFlowStyleMainScreen(context: Context) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 32.dp),
+                .padding(horizontal = 20.dp, vertical = 28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -141,64 +175,113 @@ fun WisprFlowStyleMainScreen(context: Context) {
                         Text("🫧", fontSize = 22.sp)
                     }
 
-                    IconButton(onClick = { showSettingsDialog = true }) {
+                    IconButton(onClick = {
+                        apiKey = app.geminiApiKey
+                        showSettingsDialog = true
+                    }) {
                         Text("⚙️", fontSize = 22.sp)
                     }
                 }
             }
 
-            // Wispr Flow Mode Pill Switcher
+            // 3-Mode Wispr Flow Pill Switcher (Bangla, English, Bangla -> English)
             Row(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .clip(RoundedCornerShape(24.dp))
                     .background(Color(0xFF141220))
                     .border(1.dp, Color(0x33A855F7), RoundedCornerShape(24.dp))
                     .padding(4.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Mode 1: Bangla
                 Box(
                     modifier = Modifier
+                        .weight(1f)
                         .clip(RoundedCornerShape(20.dp))
                         .background(
-                            if (!translateToEnglish) Brush.horizontalGradient(
+                            if (dictationMode == "bn") Brush.horizontalGradient(
                                 listOf(Color(0xFF8A2BE2), Color(0xFF7C3AED))
                             ) else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
                         )
                         .clickable {
-                            translateToEnglish = false
-                            app.translateToEnglish = false
+                            dictationMode = "bn"
+                            app.dictationMode = "bn"
+                            errorMessage = ""
                         }
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .padding(vertical = 10.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text("🇧🇩 বাংলা", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        text = "🇧🇩 বাংলা",
+                        color = Color.White,
+                        fontSize = 13.sp,
+                        fontWeight = if (dictationMode == "bn") FontWeight.Bold else FontWeight.Medium
+                    )
                 }
 
+                // Mode 2: English
                 Box(
                     modifier = Modifier
+                        .weight(1f)
                         .clip(RoundedCornerShape(20.dp))
                         .background(
-                            if (translateToEnglish) Brush.horizontalGradient(
+                            if (dictationMode == "en") Brush.horizontalGradient(
+                                listOf(Color(0xFF2563EB), Color(0xFF06B6D4))
+                            ) else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
+                        )
+                        .clickable {
+                            dictationMode = "en"
+                            app.dictationMode = "en"
+                            errorMessage = ""
+                        }
+                        .padding(vertical = 10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "🇬🇧 English",
+                        color = Color.White,
+                        fontSize = 13.sp,
+                        fontWeight = if (dictationMode == "en") FontWeight.Bold else FontWeight.Medium
+                    )
+                }
+
+                // Mode 3: Bangla -> English
+                Box(
+                    modifier = Modifier
+                        .weight(1.2f)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(
+                            if (dictationMode == "bn_to_en") Brush.horizontalGradient(
                                 listOf(Color(0xFF8A2BE2), Color(0xFFEC4899))
                             ) else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
                         )
                         .clickable {
-                            translateToEnglish = true
-                            app.translateToEnglish = true
+                            dictationMode = "bn_to_en"
+                            app.dictationMode = "bn_to_en"
+                            errorMessage = ""
                         }
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .padding(vertical = 10.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text("বাংলা ➔ 🇬🇧 English", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        text = "বাংলা ➔ 🇬🇧 EN",
+                        color = Color.White,
+                        fontSize = 13.sp,
+                        fontWeight = if (dictationMode == "bn_to_en") FontWeight.Bold else FontWeight.Medium
+                    )
                 }
             }
 
-            // Center Microphone Hero Element with Glowing Ring
+            // Center Microphone Hero Element with Dynamic Glowing Ring
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
                 Box(
                     modifier = Modifier
-                        .size(150.dp)
+                        .size(160.dp)
                         .scale(pulseScale)
                         .clip(CircleShape)
                         .background(
@@ -212,17 +295,19 @@ fun WisprFlowStyleMainScreen(context: Context) {
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(100.dp)
-                            .shadow(16.dp, CircleShape, spotColor = Color(0xFFA855F7))
+                            .size(105.dp)
+                            .shadow(20.dp, CircleShape, spotColor = Color(0xFFA855F7))
                             .clip(CircleShape)
                             .background(
-                                if (isRecording) Brush.linearGradient(
-                                    listOf(Color(0xFFEC4899), Color(0xFF8A2BE2))
-                                ) else Brush.linearGradient(
-                                    listOf(Color(0xFF8A2BE2), Color(0xFF6D28D9))
-                                )
+                                when {
+                                    isProcessing -> Brush.linearGradient(listOf(Color(0xFF4C1D95), Color(0xFF581C87)))
+                                    isRecording -> Brush.linearGradient(listOf(Color(0xFFEC4899), Color(0xFF8A2BE2)))
+                                    dictationMode == "en" -> Brush.linearGradient(listOf(Color(0xFF2563EB), Color(0xFF1D4ED8)))
+                                    dictationMode == "bn_to_en" -> Brush.linearGradient(listOf(Color(0xFF8A2BE2), Color(0xFFEC4899)))
+                                    else -> Brush.linearGradient(listOf(Color(0xFF8A2BE2), Color(0xFF6D28D9)))
+                                }
                             )
-                            .clickable {
+                            .clickable(enabled = !isProcessing) {
                                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
                                     != PackageManager.PERMISSION_GRANTED
                                 ) {
@@ -232,6 +317,7 @@ fun WisprFlowStyleMainScreen(context: Context) {
 
                                 if (!isRecording) {
                                     audioBuffer.reset()
+                                    errorMessage = ""
                                     val sampleRate = 16000
                                     val bufferSize = AudioRecord.getMinBufferSize(
                                         sampleRate,
@@ -247,7 +333,7 @@ fun WisprFlowStyleMainScreen(context: Context) {
                                     )
                                     audioRecord?.startRecording()
                                     isRecording = true
-                                    statusText = if (translateToEnglish) "শুনছি… ইংরেজিতে অনুবাদ হবে" else "শুনছি… বাংলায় বলুন"
+                                    statusText = activeStatus
 
                                     scope.launch(Dispatchers.IO) {
                                         val data = ByteArray(1024)
@@ -260,6 +346,7 @@ fun WisprFlowStyleMainScreen(context: Context) {
                                     }
                                 } else {
                                     isRecording = false
+                                    isProcessing = true
                                     audioRecord?.stop()
                                     audioRecord?.release()
                                     audioRecord = null
@@ -272,20 +359,24 @@ fun WisprFlowStyleMainScreen(context: Context) {
 
                                         try {
                                             val engine = uniffi.kothalipi_core.KothalipiMobileEngine(app.geminiApiKey)
-                                            val result = engine.processRecording(
+                                            val result = engine.processRecordingWithMode(
                                                 fullWav,
                                                 "audio/wav",
-                                                translateToEnglish,
+                                                dictationMode,
                                                 app.smartPolish
                                             )
                                             withContext(Dispatchers.Main) {
                                                 resultText = result.processedText
                                                 statusText = "সম্পন্ন!"
+                                                isProcessing = false
+                                                errorMessage = ""
                                             }
                                         } catch (e: Exception) {
                                             withContext(Dispatchers.Main) {
-                                                statusText = "এরর: ${e.message}"
-                                                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                                                val friendly = sanitizeErrorMessage(e.message)
+                                                errorMessage = friendly
+                                                statusText = "ব্যর্থ হয়েছে"
+                                                isProcessing = false
                                             }
                                         }
                                     }
@@ -293,10 +384,18 @@ fun WisprFlowStyleMainScreen(context: Context) {
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = if (isRecording) "⏹️" else "🎙️",
-                            fontSize = 38.sp
-                        )
+                        if (isProcessing) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(36.dp),
+                                color = Color.White,
+                                strokeWidth = 3.dp
+                            )
+                        } else {
+                            Text(
+                                text = if (isRecording) "⏹️" else "🎙️",
+                                fontSize = 38.sp
+                            )
+                        }
                     }
                 }
 
@@ -309,12 +408,12 @@ fun WisprFlowStyleMainScreen(context: Context) {
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        repeat(5) { index ->
+                        repeat(6) { index ->
                             val barHeight by infiniteTransition.animateFloat(
                                 initialValue = 8f,
                                 targetValue = 28f,
                                 animationSpec = infiniteRepeatable(
-                                    animation = tween(400 + (index * 80), easing = FastOutSlowInEasing),
+                                    animation = tween(350 + (index * 70), easing = FastOutSlowInEasing),
                                     repeatMode = RepeatMode.Reverse
                                 ),
                                 label = "bar_$index"
@@ -324,19 +423,42 @@ fun WisprFlowStyleMainScreen(context: Context) {
                                     .width(4.dp)
                                     .height(barHeight.dp)
                                     .clip(RoundedCornerShape(2.dp))
-                                    .background(Color(0xFFEC4899))
+                                    .background(
+                                        if (dictationMode == "en") Color(0xFF06B6D4) else Color(0xFFEC4899)
+                                    )
                             )
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
-                    text = statusText,
+                    text = if (isRecording || isProcessing) statusText else defaultStatus,
                     color = Color(0xFF9E9EA7),
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
                 )
+
+                // Humanized Error Alert
+                if (errorMessage.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(0.9f),
+                        colors = CardDefaults.cardColors(containerColor = Color(0x33EF4444)),
+                        shape = RoundedCornerShape(12.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x66EF4444))
+                    ) {
+                        Text(
+                            text = "⚠️ $errorMessage",
+                            color = Color(0xFFFCA5A5),
+                            fontSize = 13.sp,
+                            modifier = Modifier.padding(12.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
 
             // Wispr Flow Clean Result Box
@@ -395,48 +517,78 @@ fun WisprFlowStyleMainScreen(context: Context) {
                     }
                 }
             } else {
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
 
-    // Settings Sheet Dialog
+    // Settings Dialog
     if (showSettingsDialog) {
         AlertDialog(
             onDismissRequest = { showSettingsDialog = false },
-            title = { Text("সেটিংস") },
+            containerColor = Color(0xFF161426),
+            titleContentColor = Color.White,
+            textContentColor = Color(0xFFE2E2E8),
+            title = {
+                Text("কথালিপি সেটিংস", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            },
             text = {
                 Column {
-                    Text("Google Gemini API Key:", fontSize = 14.sp)
+                    Text(
+                        "Google Gemini API Key:",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFFC4B5FD)
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = apiKey,
                         onValueChange = { apiKey = it },
-                        placeholder = { Text("AIzaSy...") },
-                        singleLine = true
+                        placeholder = { Text("AIzaSy... / AQ...", color = Color.Gray) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF8A2BE2),
+                            unfocusedBorderColor = Color(0x44A855F7),
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        ),
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        "আপনার ফ্রি জেমিনি কি দিন। এটি ডিভাইসেই সুরক্ষিত থাকবে।",
+                        "💡 আপনার কি-টি সম্পূর্ণ সুরক্ষিত ও ডিভাইসেই থাকবে। কোনো কি না থাকলে Google AI Studio থেকে ফ্রি কি নিন:",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = Color(0xFF9E9EA7),
+                        lineHeight = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        "aistudio.google.com/apikey",
+                        fontSize = 13.sp,
+                        color = Color(0xFF38BDF8),
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.clickable {
+                            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://aistudio.google.com/apikey"))
+                            context.startActivity(browserIntent)
+                        }
                     )
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        app.geminiApiKey = apiKey
+                        app.geminiApiKey = apiKey.trim()
                         showSettingsDialog = false
-                        Toast.makeText(context, "সংরক্ষণ করা হয়েছে", Toast.LENGTH_SHORT).show()
-                    }
+                        Toast.makeText(context, "API Key সংরক্ষণ করা হয়েছে ✓", Toast.LENGTH_SHORT).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8A2BE2))
                 ) {
                     Text("Save")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showSettingsDialog = false }) {
-                    Text("Cancel")
+                    Text("Cancel", color = Color(0xFF9E9EA7))
                 }
             }
         )

@@ -38,7 +38,12 @@ pub async fn translate_bangla_to_english(
         .build()
         .map_err(|e| EngineError::NetworkError { detail: e.to_string() })?;
 
-    let models = ["gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-flash-latest"];
+    let models = [
+        "gemini-flash-lite-latest",
+        "gemini-3.5-flash-lite",
+        "gemini-3.8-flash",
+        "gemini-flash-latest",
+    ];
     let mut last_err = String::new();
 
     for model in models {
