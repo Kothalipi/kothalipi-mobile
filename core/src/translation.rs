@@ -18,7 +18,7 @@ pub async fn translate_bangla_to_english(
 
     if api_key.trim().is_empty() {
         return Err(EngineError::BadApiKey {
-            message: "Gemini API key is required for translation".to_string(),
+            detail: "Gemini API key is required for translation".to_string(),
         });
     }
 
@@ -36,7 +36,7 @@ pub async fn translate_bangla_to_english(
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(12))
         .build()
-        .map_err(|e| EngineError::NetworkError { message: e.to_string() })?;
+        .map_err(|e| EngineError::NetworkError { detail: e.to_string() })?;
 
     let models = ["gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-flash-latest"];
     let mut last_err = String::new();
@@ -50,7 +50,7 @@ pub async fn translate_bangla_to_english(
         let resp = client.post(&url).json(&payload).send().await;
         match resp {
             Ok(r) if r.status().is_success() => {
-                let json: serde_json::Value = r.json().await.map_err(|e| EngineError::NetworkError { message: e.to_string() })?;
+                let json: serde_json::Value = r.json().await.map_err(|e| EngineError::NetworkError { detail: e.to_string() })?;
                 if let Some(t) = json["candidates"][0]["content"]["parts"][0]["text"].as_str() {
                     return Ok(t.trim().to_string());
                 }
@@ -65,6 +65,6 @@ pub async fn translate_bangla_to_english(
     }
 
     Err(EngineError::NetworkError {
-        message: format!("Translation failed: {}", last_err),
+        detail: format!("Translation failed: {}", last_err),
     })
 }

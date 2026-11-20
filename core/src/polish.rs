@@ -34,7 +34,7 @@ pub async fn smart_polish(
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(12))
         .build()
-        .map_err(|e| EngineError::NetworkError { message: e.to_string() })?;
+        .map_err(|e| EngineError::NetworkError { detail: e.to_string() })?;
 
     let url = format!(
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key={}",

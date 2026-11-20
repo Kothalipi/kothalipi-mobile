@@ -10,13 +10,13 @@ pub async fn transcribe_gemini(
 ) -> Result<(String, String), EngineError> {
     if api_key.trim().is_empty() {
         return Err(EngineError::BadApiKey {
-            message: "Gemini API key is missing".to_string(),
+            detail: "Gemini API key is missing".to_string(),
         });
     }
 
     if audio_bytes.is_empty() {
         return Err(EngineError::InvalidAudio {
-            message: "Audio payload is empty".to_string(),
+            detail: "Audio payload is empty".to_string(),
         });
     }
 
@@ -48,7 +48,7 @@ pub async fn transcribe_gemini(
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(20))
         .build()
-        .map_err(|e| EngineError::NetworkError { message: e.to_string() })?;
+        .map_err(|e| EngineError::NetworkError { detail: e.to_string() })?;
 
     let models = ["gemini-3.5-transcribe", "gemini-2.5-flash", "gemini-flash-latest"];
     let mut last_error = String::new();
@@ -69,7 +69,7 @@ pub async fn transcribe_gemini(
             Ok(resp) => {
                 let status = resp.status();
                 if status.is_success() {
-                    let json: serde_json::Value = resp.json().await.map_err(|e| EngineError::NetworkError { message: e.to_string() })?;
+                    let json: serde_json::Value = resp.json().await.map_err(|e| EngineError::NetworkError { detail: e.to_string() })?;
                     if let Some(text) = json["candidates"][0]["content"]["parts"][0]["text"].as_str() {
                         let cleaned = text.trim().to_string();
                         let language = if cleaned.chars().any(|c| ('\u{0980}'..='\u{09FF}').contains(&c)) {
@@ -83,7 +83,7 @@ pub async fn transcribe_gemini(
                     return Err(EngineError::RateLimitExceeded);
                 } else if status.as_u16() == 400 || status.as_u16() == 403 {
                     return Err(EngineError::BadApiKey {
-                        message: format!("Google API error HTTP {}: invalid or restricted key", status),
+                        detail: format!("Google API error HTTP {}: invalid or restricted key", status),
                     });
                 } else {
                     last_error = format!("HTTP {}", status);
@@ -96,6 +96,6 @@ pub async fn transcribe_gemini(
     }
 
     Err(EngineError::NetworkError {
-        message: format!("Transcription failed on all Gemini models: {}", last_error),
+        detail: format!("Transcription failed on all Gemini models: {}", last_error),
     })
 }

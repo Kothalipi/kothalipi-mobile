@@ -9,16 +9,16 @@ uniffi::setup_scaffolding!();
 
 #[derive(Debug, thiserror::Error, uniffi::Error)]
 pub enum EngineError {
-    #[error("Bad or missing API key: {message}")]
-    BadApiKey { message: String },
-    #[error("Network connection error: {message}")]
-    NetworkError { message: String },
+    #[error("Bad or missing API key: {detail}")]
+    BadApiKey { detail: String },
+    #[error("Network connection error: {detail}")]
+    NetworkError { detail: String },
     #[error("Rate limit exceeded")]
     RateLimitExceeded,
-    #[error("Invalid audio input: {message}")]
-    InvalidAudio { message: String },
-    #[error("Internal engine error: {message}")]
-    Other { message: String },
+    #[error("Invalid audio input: {detail}")]
+    InvalidAudio { detail: String },
+    #[error("Internal engine error: {detail}")]
+    Other { detail: String },
 }
 
 #[derive(Clone, Debug, uniffi::Record)]
@@ -68,7 +68,7 @@ impl KothalipiMobileEngine {
     ) -> Result<TranscriptionResult, EngineError> {
         let key = self.get_api_key();
         let rt = tokio::runtime::Runtime::new()
-            .map_err(|e| EngineError::Other { message: e.to_string() })?;
+            .map_err(|e| EngineError::Other { detail: e.to_string() })?;
 
         let (text, language) = rt.block_on(async {
             cloud_stt::transcribe_gemini(&key, &audio_bytes, &mime_type).await
@@ -81,7 +81,7 @@ impl KothalipiMobileEngine {
     pub fn translate_bangla_to_english(&self, text: String) -> Result<String, EngineError> {
         let key = self.get_api_key();
         let rt = tokio::runtime::Runtime::new()
-            .map_err(|e| EngineError::Other { message: e.to_string() })?;
+            .map_err(|e| EngineError::Other { detail: e.to_string() })?;
 
         rt.block_on(async {
             translation::translate_bangla_to_english(&key, &text).await
@@ -92,7 +92,7 @@ impl KothalipiMobileEngine {
     pub fn smart_polish(&self, text: String, language: String) -> Result<String, EngineError> {
         let key = self.get_api_key();
         let rt = tokio::runtime::Runtime::new()
-            .map_err(|e| EngineError::Other { message: e.to_string() })?;
+            .map_err(|e| EngineError::Other { detail: e.to_string() })?;
 
         rt.block_on(async {
             polish::smart_polish(&key, &text, &language).await
@@ -109,7 +109,7 @@ impl KothalipiMobileEngine {
     ) -> Result<ProcessResult, EngineError> {
         let key = self.get_api_key();
         let rt = tokio::runtime::Runtime::new()
-            .map_err(|e| EngineError::Other { message: e.to_string() })?;
+            .map_err(|e| EngineError::Other { detail: e.to_string() })?;
 
         rt.block_on(async {
             let (raw_text, detected_language) =
