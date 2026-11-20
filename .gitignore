@@ -1,0 +1,23 @@
+# Rust / Cargo
+/core/target/
+Cargo.lock
+
+# Android / Gradle
+.gradle/
+build/
+*/build/
+*.apk
+*.aab
+/android/local.properties
+.idea/
+*.iml
+
+# iOS / Xcode
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+*.xcworkspace/*
+!*.xcworkspace/contents.xcworkspacedata
+xcuserdata/
+DerivedData/
+*.xcframework/
+.DS_Store

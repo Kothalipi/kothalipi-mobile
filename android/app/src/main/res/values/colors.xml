@@ -1,0 +1,9 @@
+<resources>
+    <color name="purple_primary">#8A2BE2</color>
+    <color name="purple_dark">#120F1D</color>
+    <color name="background_dark">#0F0F14</color>
+    <color name="card_dark">#1A1A24</color>
+    <color name="text_white">#F5F5F7</color>
+    <color name="text_gray">#9E9EA7</color>
+    <color name="accent_plum">#E254FF</color>
+</resources>
