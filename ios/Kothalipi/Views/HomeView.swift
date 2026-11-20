@@ -1,6 +1,7 @@
 import SwiftUI
 import AVFoundation
 
+/// Wispr Flow-style SwiftUI Home View for iOS
 struct HomeView: View {
     @EnvironmentObject var manager: KothalipiEngineManager
     @State private var isRecording = false
@@ -10,17 +11,32 @@ struct HomeView: View {
     @State private var showSettings = false
     @State private var apiKeyInput = ""
 
+    let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
+
     var body: some View {
         ZStack {
-            Color(hex: "0F0F14")
+            // Ultra-deep obsidian background with subtle top-center radial violet glow
+            Color(hex: "09080E")
                 .ignoresSafeArea()
+
+            Circle()
+                .fill(Color(hex: "7C3AED").opacity(0.12))
+                .blur(radius: 90)
+                .frame(width: 300, height: 300)
+                .offset(y: -200)
 
             VStack(spacing: 24) {
                 // Header
                 HStack {
-                    Text("কথালিপি")
-                        .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(Color(hex: "F5F5F7"))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("কথালিপি")
+                            .font(.system(size: 28, weight: .heavy))
+                            .foregroundColor(Color(hex: "F8F8FC"))
+
+                        Text("AI Voice Dictation & Flow")
+                            .font(.system(size: 12))
+                            .foregroundColor(Color(hex: "8E8CA0"))
+                    }
 
                     Spacer()
 
@@ -29,87 +45,119 @@ struct HomeView: View {
                         showSettings = true
                     }) {
                         Image(systemName: "gearshape.fill")
-                            .font(.system(size: 22))
+                            .font(.system(size: 20))
                             .foregroundColor(Color(hex: "9E9EA7"))
+                            .padding(10)
+                            .background(Color(hex: "161424"))
+                            .clipShape(Circle())
                     }
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
 
-                // Language Mode Selector
+                // Wispr Flow Mode Pill Switcher
                 HStack(spacing: 0) {
-                    Button(action: { translateToEnglish = false }) {
-                        Text("বাংলা")
-                            .font(.system(size: 15, weight: .semibold))
+                    Button(action: {
+                        hapticFeedback.impactOccurred()
+                        translateToEnglish = false
+                    }) {
+                        Text("🇧🇩 বাংলা")
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 16)
-                            .background(!translateToEnglish ? Color(hex: "8A2BE2") : Color.clear)
-                            .cornerRadius(16)
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 18)
+                            .background(!translateToEnglish ? LinearGradient(colors: [Color(hex: "8A2BE2"), Color(hex: "7C3AED")], startPoint: .leading, endPoint: .trailing) : LinearGradient(colors: [Color.clear], startPoint: .leading, endPoint: .trailing))
+                            .cornerRadius(18)
                     }
 
-                    Button(action: { translateToEnglish = true }) {
-                        Text("বাংলা ➔ English")
-                            .font(.system(size: 15, weight: .semibold))
+                    Button(action: {
+                        hapticFeedback.impactOccurred()
+                        translateToEnglish = true
+                    }) {
+                        Text("বাংলা ➔ 🇬🇧 English")
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 16)
-                            .background(translateToEnglish ? Color(hex: "8A2BE2") : Color.clear)
-                            .cornerRadius(16)
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 18)
+                            .background(translateToEnglish ? LinearGradient(colors: [Color(hex: "8A2BE2"), Color(hex: "EC4899")], startPoint: .leading, endPoint: .trailing) : LinearGradient(colors: [Color.clear], startPoint: .leading, endPoint: .trailing))
+                            .cornerRadius(18)
                     }
                 }
-                .background(Color(hex: "1A1A24"))
-                .cornerRadius(20)
+                .padding(4)
+                .background(Color(hex: "141220"))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22)
+                        .stroke(Color(hex: "A855F7").opacity(0.2), lineWidth: 1)
+                )
+                .cornerRadius(22)
                 .padding(.top, 8)
 
                 Spacer()
 
-                // Center Recording Button
-                VStack(spacing: 16) {
+                // Center Hero Microphone Button with Glowing Pulses
+                VStack(spacing: 20) {
                     ZStack {
+                        // Outer breathing pulse halo
                         Circle()
-                            .fill(isRecording ? Color(hex: "E254FF").opacity(0.3) : Color(hex: "8A2BE2").opacity(0.2))
-                            .frame(width: 140, height: 140)
-                            .scaleEffect(isRecording ? 1.2 : 1.0)
-                            .animation(isRecording ? Animation.easeInOut(duration: 0.8).repeatForever(autoreverses: true) : .default, value: isRecording)
+                            .fill(isRecording ? Color(hex: "EC4899").opacity(0.25) : Color(hex: "8A2BE2").opacity(0.15))
+                            .frame(width: 160, height: 160)
+                            .scaleEffect(isRecording ? 1.25 : 1.0)
+                            .animation(isRecording ? Animation.easeInOut(duration: 0.7).repeatForever(autoreverses: true) : .default, value: isRecording)
 
+                        // Hero Glassmorphic Button
                         Button(action: toggleRecording) {
                             Circle()
-                                .fill(isRecording ? Color(hex: "E254FF") : Color(hex: "8A2BE2"))
-                                .frame(width: 100, height: 100)
+                                .fill(
+                                    isRecording
+                                        ? LinearGradient(colors: [Color(hex: "EC4899"), Color(hex: "8A2BE2")], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                        : LinearGradient(colors: [Color(hex: "8A2BE2"), Color(hex: "6D28D9")], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                )
+                                .frame(width: 104, height: 104)
+                                .shadow(color: isRecording ? Color(hex: "EC4899").opacity(0.5) : Color(hex: "8A2BE2").opacity(0.4), radius: 20, x: 0, y: 10)
                                 .overlay(
                                     Image(systemName: isRecording ? "stop.fill" : "mic.fill")
-                                        .font(.system(size: 40))
+                                        .font(.system(size: 42))
                                         .foregroundColor(.white)
                                 )
                         }
                     }
 
+                    // Live animated soundwave bars
+                    if isRecording {
+                        HStack(spacing: 5) {
+                            ForEach(0..<5) { index in
+                                WaveformBar(delay: Double(index) * 0.12)
+                            }
+                        }
+                        .frame(height: 24)
+                    }
+
                     Text(statusText)
-                        .font(.system(size: 16))
+                        .font(.system(size: 15, weight: .medium))
                         .foregroundColor(Color(hex: "9E9EA7"))
                 }
 
                 Spacer()
 
-                // Result Box
+                // Result Box (Wispr Flow style glassmorphic card)
                 if !resultText.isEmpty {
-                    VStack(alignment: .leading, spacing: 14) {
+                    VStack(alignment: .leading, spacing: 16) {
                         Text(resultText)
                             .font(.system(size: 18))
-                            .foregroundColor(Color(hex: "F5F5F7"))
+                            .foregroundColor(Color(hex: "F8F8FC"))
                             .lineSpacing(6)
 
                         HStack {
                             Spacer()
 
                             Button(action: {
+                                hapticFeedback.impactOccurred()
                                 UIPasteboard.general.string = resultText
                             }) {
                                 Label("Copy", systemImage: "doc.on.doc")
                                     .font(.system(size: 14, weight: .semibold))
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 9)
                                     .background(Color(hex: "8A2BE2"))
                                     .foregroundColor(.white)
                                     .cornerRadius(12)
@@ -118,20 +166,24 @@ struct HomeView: View {
                             ShareLink(item: resultText) {
                                 Label("Share", systemImage: "square.and.arrow.up")
                                     .font(.system(size: 14, weight: .semibold))
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 8)
-                                    .background(Color(hex: "2A2A38"))
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 9)
+                                    .background(Color(hex: "221E33"))
                                     .foregroundColor(.white)
                                     .cornerRadius(12)
                             }
                         }
                     }
-                    .padding(18)
-                    .background(Color(hex: "1A1A24"))
-                    .cornerRadius(16)
+                    .padding(20)
+                    .background(Color(hex: "141220"))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18)
+                            .stroke(Color(hex: "A855F7").opacity(0.2), lineWidth: 1)
+                    )
+                    .cornerRadius(18)
                     .padding(.horizontal, 20)
                 } else {
-                    Spacer().frame(height: 40)
+                    Spacer().frame(height: 50)
                 }
             }
         }
@@ -144,11 +196,13 @@ struct HomeView: View {
     }
 
     private func toggleRecording() {
+        hapticFeedback.impactOccurred()
+
         if !isRecording {
             manager.audioRecorder.startRecording { success in
                 if success {
                     isRecording = true
-                    statusText = "শুনছি… কথা বলুন"
+                    statusText = translateToEnglish ? "শুনছি… ইংরেজিতে অনুবাদ হবে" : "শুনছি… বলুন"
                 } else {
                     statusText = "মাইক্রোফোন পারমিশন প্রয়োজন"
                 }
@@ -171,6 +225,7 @@ struct HomeView: View {
                     await MainActor.run {
                         resultText = result
                         statusText = "সম্পন্ন!"
+                        hapticFeedback.impactOccurred()
                     }
                 } catch {
                     await MainActor.run {
@@ -182,39 +237,23 @@ struct HomeView: View {
     }
 }
 
-struct SettingsSheet: View {
-    @Binding var apiKey: String
-    var onSave: (String) -> Void
-    @Environment(\.dismiss) var dismiss
+/// Dynamic bouncing waveform bar component
+struct WaveformBar: View {
+    let delay: Double
+    @State private var isAnimating = false
 
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Gemini API Key")) {
-                    SecureField("AIzaSy...", text: $apiKey)
-                }
+        RoundedRectangle(cornerRadius: 2)
+            .fill(LinearGradient(colors: [Color(hex: "EC4899"), Color(hex: "8A2BE2")], startPoint: .top, endPoint: .bottom))
+            .frame(width: 4, height: isAnimating ? 24 : 6)
+            .animation(
+                Animation.easeInOut(duration: 0.45)
+                    .repeatForever(autoreverses: true)
+                    .delay(delay),
+                value: isAnimating
+            )
+            .onAppear {
+                isAnimating = true
             }
-            .navigationTitle("সেটিংস")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { onSave(apiKey) }
-                }
-            }
-        }
-    }
-}
-
-extension Color {
-    init(hex: String) {
-        let scanner = Scanner(string: hex)
-        var rgbValue: UInt64 = 0
-        scanner.scanHexInt64(&rgbValue)
-        let r = Double((rgbValue & 0xFF0000) >> 16) / 255.0
-        let g = Double((rgbValue & 0x00FF00) >> 8) / 255.0
-        let b = Double(rgbValue & 0x0000FF) / 255.0
-        self.init(red: r, green: g, blue: b)
     }
 }

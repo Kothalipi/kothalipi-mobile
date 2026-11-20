@@ -1,7 +1,7 @@
 package com.kothalipi.mobile.keyboard
 
-import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.inputmethodservice.InputMethodService
 import android.media.AudioFormat
 import android.media.AudioRecord
@@ -22,8 +22,8 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 /**
- * Kothalipi Voice Keyboard Extension for Android
- * Provides a dedicated voice typing input method in any app (WhatsApp, Messenger, Notes, etc.)
+ * Wispr Flow-style Minimal Voice Keyboard for Android
+ * Replaces standard keyboard with an ultra-clean voice dictation bar
  */
 class KothalipiInputMethodService : InputMethodService() {
 
@@ -35,57 +35,104 @@ class KothalipiInputMethodService : InputMethodService() {
 
     private lateinit var micButton: Button
     private lateinit var statusLabel: TextView
-    private lateinit var modeButton: Button
+    private lateinit var modePill: TextView
 
     override fun onCreateInputView(): View {
         val app = KothalipiApp.instance
 
-        val rootLayout = LinearLayout(this).apply {
+        val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#120F1D"))
-            gravity = Gravity.CENTER
-            setPadding(24, 32, 24, 32)
+            setBackgroundColor(Color.parseColor("#0C0A14"))
+            gravity = Gravity.CENTER_HORIZONTAL
+            setPadding(32, 24, 32, 28)
         }
 
+        // Top Control Bar (Mode switcher & quick actions)
         val topBar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, 0, 0, 20)
         }
 
-        modeButton = Button(this).apply {
-            text = if (app.translateToEnglish) "বাংলা ➔ EN" else "বাংলা"
-            setBackgroundColor(Color.parseColor("#1A1A24"))
-            setTextColor(Color.WHITE)
+        val pillBg = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = 32f
+            setColor(Color.parseColor("#1B172B"))
+            setStroke(2, Color.parseColor("#3B2D5A"))
+        }
+
+        modePill = TextView(this).apply {
+            text = if (app.translateToEnglish) "🇧🇩 বাংলা ➔ 🇬🇧 English" else "🇧🇩 বাংলা"
+            textSize = 13f
+            setTextColor(Color.parseColor("#A855F7"))
+            background = pillBg
+            setPadding(32, 14, 32, 14)
             setOnClickListener {
                 app.translateToEnglish = !app.translateToEnglish
-                text = if (app.translateToEnglish) "বাংলা ➔ EN" else "বাংলা"
+                text = if (app.translateToEnglish) "🇧🇩 বাংলা ➔ 🇬🇧 English" else "🇧🇩 বাংলা"
             }
         }
-        topBar.addView(modeButton)
+
+        topBar.addView(modePill)
 
         statusLabel = TextView(this).apply {
             text = "কথা বলতে মাইক চাপুন"
-            setTextColor(Color.parseColor("#9E9EA7"))
+            setTextColor(Color.parseColor("#8E8CA0"))
             textSize = 14f
-            setPadding(16, 16, 16, 16)
+            setPadding(0, 10, 0, 18)
             gravity = Gravity.CENTER
+        }
+
+        // Center Hero Microphone Button
+        val micBg = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            colors = intArrayOf(Color.parseColor("#8A2BE2"), Color.parseColor("#6B21A8"))
         }
 
         micButton = Button(this).apply {
             text = "🎙️"
-            textSize = 28f
-            setBackgroundColor(Color.parseColor("#8A2BE2"))
-            setTextColor(Color.WHITE)
+            textSize = 34f
+            background = micBg
+            elevation = 12f
             setOnClickListener {
                 toggleRecording()
             }
         }
 
-        rootLayout.addView(topBar)
-        rootLayout.addView(statusLabel)
-        rootLayout.addView(micButton)
+        val micParams = LinearLayout.LayoutParams(180, 180).apply {
+            gravity = Gravity.CENTER
+        }
 
-        return rootLayout
+        // Bottom Action Row (Delete, Space, Return)
+        val bottomRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(0, 20, 0, 0)
+        }
+
+        val spaceBtn = Button(this).apply {
+            text = "Space"
+            setTextColor(Color.parseColor("#9E9EA7"))
+            setBackgroundColor(Color.parseColor("#141122"))
+            setOnClickListener { currentInputConnection?.commitText(" ", 1) }
+        }
+
+        val deleteBtn = Button(this).apply {
+            text = "⌫"
+            setTextColor(Color.parseColor("#9E9EA7"))
+            setBackgroundColor(Color.parseColor("#141122"))
+            setOnClickListener { currentInputConnection?.deleteSurroundingText(1, 0) }
+        }
+
+        bottomRow.addView(spaceBtn)
+        bottomRow.addView(deleteBtn)
+
+        root.addView(topBar)
+        root.addView(statusLabel)
+        root.addView(micButton, micParams)
+        root.addView(bottomRow)
+
+        return root
     }
 
     private fun toggleRecording() {
@@ -111,8 +158,8 @@ class KothalipiInputMethodService : InputMethodService() {
                 audioRecord?.startRecording()
                 isRecording = true
                 micButton.text = "⏹️"
-                micButton.setBackgroundColor(Color.parseColor("#E254FF"))
-                statusLabel.text = "শুনছি… বলুন"
+                statusLabel.text = if (app.translateToEnglish) "শুনছি… ইংরেজিতে লিখব" else "শুনছি… বলুন"
+                statusLabel.setTextColor(Color.parseColor("#EC4899"))
 
                 CoroutineScope(Dispatchers.IO).launch {
                     val data = ByteArray(1024)
@@ -124,16 +171,17 @@ class KothalipiInputMethodService : InputMethodService() {
                     }
                 }
             } catch (e: SecurityException) {
-                statusLabel.text = "মাইক পারমিশন নেই"
+                statusLabel.text = "মাইক পারমিশন দিন"
             }
         } else {
             isRecording = false
             audioRecord?.stop()
             audioRecord?.release()
             audioRecord = null
-            micButton.text = "🎙️"
-            micButton.setBackgroundColor(Color.parseColor("#8A2BE2"))
-            statusLabel.text = "টেক্সট তৈরি হচ্ছে…"
+
+            micButton.text = "⏳"
+            statusLabel.text = "প্রসেসিং..."
+            statusLabel.setTextColor(Color.parseColor("#8E8CA0"))
 
             scope.launch(Dispatchers.IO) {
                 val pcmData = audioBuffer.toByteArray()
@@ -152,13 +200,15 @@ class KothalipiInputMethodService : InputMethodService() {
                     withContext(Dispatchers.Main) {
                         currentInputConnection?.commitText(result.processedText, 1)
                         statusLabel.text = "টাইপ করা হয়েছে!"
+                        micButton.text = "🎙️"
                         mainHandler.postDelayed({
                             statusLabel.text = "কথা বলতে মাইক চাপুন"
-                        }, 1500)
+                        }, 1200)
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
                         statusLabel.text = "এরর: ${e.message}"
+                        micButton.text = "🎙️"
                     }
                 }
             }
