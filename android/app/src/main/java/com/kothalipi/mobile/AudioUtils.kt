@@ -80,7 +80,10 @@ class AudioRecorderHelper {
     @SuppressLint("MissingPermission")
     fun start(
         scope: CoroutineScope,
+        autoSilenceStop: Boolean = false,
+        silenceDurationMs: Long = 2000L,
         onAmplitude: (Float) -> Unit = {},
+        onSilenceDetected: () -> Unit = {},
         onError: (String) -> Unit = {}
     ): Boolean {
         synchronized(lock) {
@@ -138,6 +141,11 @@ class AudioRecorderHelper {
 
             recordJob = scope.launch(Dispatchers.IO) {
                 val readBuf = ByteArray(1024)
+                var hasHeardSpeech = false
+                var speechFrames = 0
+                var silenceStartMs = 0L
+                var silenceTriggered = false
+
                 while (isRecordingFlag.get()) {
                     val read = try {
                         recorder.read(readBuf, 0, readBuf.size)
@@ -148,7 +156,27 @@ class AudioRecorderHelper {
                         synchronized(pcmStream) {
                             pcmStream.write(readBuf, 0, read)
                         }
-                        onAmplitude(computeRmsAmplitude(readBuf, read))
+                        val amp = computeRmsAmplitude(readBuf, read)
+                        onAmplitude(amp)
+
+                        if (autoSilenceStop && !silenceTriggered) {
+                            val now = System.currentTimeMillis()
+                            if (amp > 0.08f) {
+                                speechFrames++
+                                if (speechFrames >= 5) {
+                                    hasHeardSpeech = true
+                                }
+                                silenceStartMs = 0L
+                            } else if (hasHeardSpeech && amp < 0.045f) {
+                                if (silenceStartMs == 0L) {
+                                    silenceStartMs = now
+                                } else if (now - silenceStartMs >= silenceDurationMs) {
+                                    silenceTriggered = true
+                                    onSilenceDetected()
+                                    break
+                                }
+                            }
+                        }
                     } else if (read < 0) {
                         break
                     }

@@ -13,6 +13,7 @@
 		A19A1BAAB2B317A44D1B1DBA /* KothalipiShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BD18114CDA03A3C23C324C /* KothalipiShortcuts.swift */; };
 		A60EFDFFF061B568A32F4BE5 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E24BE7A7742480080949A5 /* AudioRecorder.swift */; };
 		CDCB1C6E833F00735C8B3B77 /* KothalipiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D2B2544147387379076539 /* KothalipiApp.swift */; };
+		E8387F66F3617F27B59F6179 /* OfflineSpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A69BBD43BC13BE27BA3496 /* OfflineSpeechRecognizer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,7 @@
 		63D2B2544147387379076539 /* KothalipiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KothalipiApp.swift; sourceTree = "<group>"; };
 		70D16298B05E7A51CA94A7BE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		76C4C7CE2A45F01BC1B33543 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		77A69BBD43BC13BE27BA3496 /* OfflineSpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineSpeechRecognizer.swift; sourceTree = "<group>"; };
 		85BD18114CDA03A3C23C324C /* KothalipiShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KothalipiShortcuts.swift; sourceTree = "<group>"; };
 		E134372A0FD96385E6F94EDD /* KothalipiKeyboard.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = KothalipiKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -66,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				26E24BE7A7742480080949A5 /* AudioRecorder.swift */,
+				77A69BBD43BC13BE27BA3496 /* OfflineSpeechRecognizer.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -200,6 +203,7 @@
 				41625A9592D89E652C904D2F /* HomeView.swift in Sources */,
 				CDCB1C6E833F00735C8B3B77 /* KothalipiApp.swift in Sources */,
 				A19A1BAAB2B317A44D1B1DBA /* KothalipiShortcuts.swift in Sources */,
+				E8387F66F3617F27B59F6179 /* OfflineSpeechRecognizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,6 +236,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "কথালিপি";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Kothalipi needs microphone access for voice dictation";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Kothalipi uses on-device speech recognition for free offline voice typing";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -397,6 +402,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "কথালিপি";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Kothalipi needs microphone access for voice dictation";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Kothalipi uses on-device speech recognition for free offline voice typing";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;

@@ -332,7 +332,7 @@ class KothalipiFloatingService : Service() {
         if (isProcessing) return
         val app = KothalipiApp.instance
 
-        if (app.geminiApiKey.isBlank()) {
+        if (!app.hasAnyApiKey) {
             showTransientStatus("API Key দিন!", 2200)
             return
         }
@@ -340,6 +340,12 @@ class KothalipiFloatingService : Service() {
         if (!recorder.isRecording) {
             val started = recorder.start(
                 scope = serviceScope,
+                autoSilenceStop = app.autoSilenceStop,
+                onSilenceDetected = {
+                    mainHandler.post {
+                        if (recorder.isRecording && !isProcessing) toggleRecording()
+                    }
+                },
                 onError = { msg ->
                     mainHandler.post { showTransientStatus(msg, 2200) }
                 }

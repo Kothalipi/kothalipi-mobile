@@ -740,6 +740,18 @@ internal interface UniffiForeignFutureCompleteVoid : com.sun.jna.Callback {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -779,6 +791,14 @@ internal interface UniffiLib : Library {
     ): RustBuffer.ByValue
     fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_set_api_key(`ptr`: Pointer,`key`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
+    fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_set_groq_api_key(`ptr`: Pointer,`key`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_set_openai_api_key(`ptr`: Pointer,`key`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_set_primary_provider(`ptr`: Pointer,`provider`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_set_snippets(`ptr`: Pointer,`items`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_smart_polish(`ptr`: Pointer,`text`: RustBuffer.ByValue,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_smart_polish_with_style(`ptr`: Pointer,`text`: RustBuffer.ByValue,`language`: RustBuffer.ByValue,`style`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -788,6 +808,10 @@ internal interface UniffiLib : Library {
     fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_translate_bangla_to_english(`ptr`: Pointer,`text`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_validate_api_key(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_validate_provider_key(`ptr`: Pointer,`provider`: RustBuffer.ByValue,`key`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    fun uniffi_kothalipi_core_fn_method_kothalipimobileengine_voice_edit_text(`ptr`: Pointer,`existingText`: RustBuffer.ByValue,`audioBytes`: RustBuffer.ByValue,`mimeType`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun ffi_kothalipi_core_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -915,6 +939,14 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_set_api_key(
     ): Short
+    fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_set_groq_api_key(
+    ): Short
+    fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_set_openai_api_key(
+    ): Short
+    fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_set_primary_provider(
+    ): Short
+    fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_set_snippets(
+    ): Short
     fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_smart_polish(
     ): Short
     fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_smart_polish_with_style(
@@ -924,6 +956,10 @@ internal interface UniffiLib : Library {
     fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_translate_bangla_to_english(
     ): Short
     fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_validate_api_key(
+    ): Short
+    fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_validate_provider_key(
+    ): Short
+    fun uniffi_kothalipi_core_checksum_method_kothalipimobileengine_voice_edit_text(
     ): Short
     fun uniffi_kothalipi_core_checksum_constructor_kothalipimobileengine_new(
     ): Short
@@ -956,13 +992,25 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_process_recording() != 56558.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_process_recording_full() != 9290.toShort()) {
+    if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_process_recording_full() != 22830.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_process_recording_with_mode() != 36536.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_set_api_key() != 63574.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_set_groq_api_key() != 25906.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_set_openai_api_key() != 62818.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_set_primary_provider() != 20644.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_set_snippets() != 36427.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_smart_polish() != 6880.toShort()) {
@@ -974,10 +1022,16 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_transcribe_audio() != 34417.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_translate_bangla_to_english() != 45352.toShort()) {
+    if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_translate_bangla_to_english() != 10603.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_validate_api_key() != 21765.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_validate_provider_key() != 47525.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_kothalipi_core_checksum_method_kothalipimobileengine_voice_edit_text() != 8309.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_kothalipi_core_checksum_constructor_kothalipimobileengine_new() != 50413.toShort()) {
@@ -1380,7 +1434,7 @@ public interface KothalipiMobileEngineInterface {
     fun `processRecording`(`audioBytes`: kotlin.ByteArray, `mimeType`: kotlin.String, `translateToEnglish`: kotlin.Boolean, `enableSmartPolish`: kotlin.Boolean): ProcessResult
     
     /**
-     * Full end-to-end single-pass recording pipeline (fast! avoids double latency)
+     * Full end-to-end recording pipeline with Multi-Provider Auto-Fallback + Voice Snippets!
      * mode: "bn", "en", "bn_to_en", "auto"
      * style: "normal", "formal", "casual", "bullets"
      */
@@ -1392,6 +1446,17 @@ public interface KothalipiMobileEngineInterface {
     fun `processRecordingWithMode`(`audioBytes`: kotlin.ByteArray, `mimeType`: kotlin.String, `mode`: kotlin.String, `enableSmartPolish`: kotlin.Boolean): ProcessResult
     
     fun `setApiKey`(`key`: kotlin.String)
+    
+    fun `setGroqApiKey`(`key`: kotlin.String)
+    
+    fun `setOpenaiApiKey`(`key`: kotlin.String)
+    
+    /**
+     * Primary provider: "auto", "gemini", "groq", "openai"
+     */
+    fun `setPrimaryProvider`(`provider`: kotlin.String)
+    
+    fun `setSnippets`(`items`: List<VoiceSnippet>)
     
     /**
      * Smart polish punctuation, capitalization, and filler words
@@ -1409,7 +1474,7 @@ public interface KothalipiMobileEngineInterface {
     fun `transcribeAudio`(`audioBytes`: kotlin.ByteArray, `mimeType`: kotlin.String): TranscriptionResult
     
     /**
-     * Translate spoken Bengali into fluent English
+     * Translate spoken Bengali into fluent English (with provider fallback)
      */
     fun `translateBanglaToEnglish`(`text`: kotlin.String): kotlin.String
     
@@ -1417,6 +1482,17 @@ public interface KothalipiMobileEngineInterface {
      * Validates that the configured Gemini API key can connect to Google Gemini
      */
     fun `validateApiKey`(): kotlin.String
+    
+    /**
+     * Validates any provider key ("gemini", "groq", "openai")
+     */
+    fun `validateProviderKey`(`provider`: kotlin.String, `key`: kotlin.String): kotlin.String
+    
+    /**
+     * Voice Edit Command (AI Rewrite Mode):
+     * Rewrites `existing_text` according to a spoken voice instruction in `audio_bytes`.
+     */
+    fun `voiceEditText`(`existingText`: kotlin.String, `audioBytes`: kotlin.ByteArray, `mimeType`: kotlin.String): ProcessResult
     
     companion object
 }
@@ -1569,7 +1645,7 @@ open class KothalipiMobileEngine: Disposable, AutoCloseable, KothalipiMobileEngi
 
     
     /**
-     * Full end-to-end single-pass recording pipeline (fast! avoids double latency)
+     * Full end-to-end recording pipeline with Multi-Provider Auto-Fallback + Voice Snippets!
      * mode: "bn", "en", "bn_to_en", "auto"
      * style: "normal", "formal", "casual", "bullets"
      */
@@ -1607,6 +1683,53 @@ open class KothalipiMobileEngine: Disposable, AutoCloseable, KothalipiMobileEngi
     uniffiRustCall() { _status ->
     UniffiLib.INSTANCE.uniffi_kothalipi_core_fn_method_kothalipimobileengine_set_api_key(
         it, FfiConverterString.lower(`key`),_status)
+}
+    }
+    
+    
+
+    override fun `setGroqApiKey`(`key`: kotlin.String)
+        = 
+    callWithPointer {
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_kothalipi_core_fn_method_kothalipimobileengine_set_groq_api_key(
+        it, FfiConverterString.lower(`key`),_status)
+}
+    }
+    
+    
+
+    override fun `setOpenaiApiKey`(`key`: kotlin.String)
+        = 
+    callWithPointer {
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_kothalipi_core_fn_method_kothalipimobileengine_set_openai_api_key(
+        it, FfiConverterString.lower(`key`),_status)
+}
+    }
+    
+    
+
+    
+    /**
+     * Primary provider: "auto", "gemini", "groq", "openai"
+     */override fun `setPrimaryProvider`(`provider`: kotlin.String)
+        = 
+    callWithPointer {
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_kothalipi_core_fn_method_kothalipimobileengine_set_primary_provider(
+        it, FfiConverterString.lower(`provider`),_status)
+}
+    }
+    
+    
+
+    override fun `setSnippets`(`items`: List<VoiceSnippet>)
+        = 
+    callWithPointer {
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_kothalipi_core_fn_method_kothalipimobileengine_set_snippets(
+        it, FfiConverterSequenceTypeVoiceSnippet.lower(`items`),_status)
 }
     }
     
@@ -1662,7 +1785,7 @@ open class KothalipiMobileEngine: Disposable, AutoCloseable, KothalipiMobileEngi
 
     
     /**
-     * Translate spoken Bengali into fluent English
+     * Translate spoken Bengali into fluent English (with provider fallback)
      */
     @Throws(EngineException::class)override fun `translateBanglaToEnglish`(`text`: kotlin.String): kotlin.String {
             return FfiConverterString.lift(
@@ -1686,6 +1809,39 @@ open class KothalipiMobileEngine: Disposable, AutoCloseable, KothalipiMobileEngi
     uniffiRustCallWithError(EngineException) { _status ->
     UniffiLib.INSTANCE.uniffi_kothalipi_core_fn_method_kothalipimobileengine_validate_api_key(
         it, _status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Validates any provider key ("gemini", "groq", "openai")
+     */
+    @Throws(EngineException::class)override fun `validateProviderKey`(`provider`: kotlin.String, `key`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    callWithPointer {
+    uniffiRustCallWithError(EngineException) { _status ->
+    UniffiLib.INSTANCE.uniffi_kothalipi_core_fn_method_kothalipimobileengine_validate_provider_key(
+        it, FfiConverterString.lower(`provider`),FfiConverterString.lower(`key`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Voice Edit Command (AI Rewrite Mode):
+     * Rewrites `existing_text` according to a spoken voice instruction in `audio_bytes`.
+     */
+    @Throws(EngineException::class)override fun `voiceEditText`(`existingText`: kotlin.String, `audioBytes`: kotlin.ByteArray, `mimeType`: kotlin.String): ProcessResult {
+            return FfiConverterTypeProcessResult.lift(
+    callWithPointer {
+    uniffiRustCallWithError(EngineException) { _status ->
+    UniffiLib.INSTANCE.uniffi_kothalipi_core_fn_method_kothalipimobileengine_voice_edit_text(
+        it, FfiConverterString.lower(`existingText`),FfiConverterByteArray.lower(`audioBytes`),FfiConverterString.lower(`mimeType`),_status)
 }
     }
     )
@@ -1801,6 +1957,42 @@ public object FfiConverterTypeTranscriptionResult: FfiConverterRustBuffer<Transc
     override fun write(value: TranscriptionResult, buf: ByteBuffer) {
             FfiConverterString.write(value.`text`, buf)
             FfiConverterString.write(value.`language`, buf)
+    }
+}
+
+
+
+/**
+ * Voice Snippets / Shortcuts expansion engine.
+ * Matches spoken trigger phrases (Bangla or English) and replaces them with saved text.
+ */
+data class VoiceSnippet (
+    var `trigger`: kotlin.String, 
+    var `content`: kotlin.String
+) {
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeVoiceSnippet: FfiConverterRustBuffer<VoiceSnippet> {
+    override fun read(buf: ByteBuffer): VoiceSnippet {
+        return VoiceSnippet(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: VoiceSnippet) = (
+            FfiConverterString.allocationSize(value.`trigger`) +
+            FfiConverterString.allocationSize(value.`content`)
+    )
+
+    override fun write(value: VoiceSnippet, buf: ByteBuffer) {
+            FfiConverterString.write(value.`trigger`, buf)
+            FfiConverterString.write(value.`content`, buf)
     }
 }
 
@@ -1939,5 +2131,33 @@ public object FfiConverterTypeEngineError : FfiConverterRustBuffer<EngineExcepti
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
     }
 
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeVoiceSnippet: FfiConverterRustBuffer<List<VoiceSnippet>> {
+    override fun read(buf: ByteBuffer): List<VoiceSnippet> {
+        val len = buf.getInt()
+        return List<VoiceSnippet>(len) {
+            FfiConverterTypeVoiceSnippet.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<VoiceSnippet>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeVoiceSnippet.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<VoiceSnippet>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeVoiceSnippet.write(it, buf)
+        }
+    }
 }
 

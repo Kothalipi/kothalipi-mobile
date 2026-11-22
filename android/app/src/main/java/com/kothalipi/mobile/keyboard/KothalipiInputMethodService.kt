@@ -302,8 +302,8 @@ class KothalipiInputMethodService : InputMethodService() {
             return
         }
 
-        if (app.geminiApiKey.isBlank()) {
-            statusLabel.text = "⚙️ থেকে Gemini API Key সেট করুন"
+        if (!app.hasAnyApiKey) {
+            statusLabel.text = "⚙️ থেকে API Key সেট করুন"
             statusLabel.setTextColor(Color.parseColor("#FCD34D"))
             return
         }
@@ -311,6 +311,12 @@ class KothalipiInputMethodService : InputMethodService() {
         if (!recorder.isRecording) {
             val started = recorder.start(
                 scope = scope,
+                autoSilenceStop = app.autoSilenceStop,
+                onSilenceDetected = {
+                    mainHandler.post {
+                        if (recorder.isRecording && !isProcessing) toggleRecording()
+                    }
+                },
                 onError = { msg ->
                     mainHandler.post {
                         statusLabel.text = msg
