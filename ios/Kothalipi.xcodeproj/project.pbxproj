@@ -8,17 +8,46 @@
 
 /* Begin PBXBuildFile section */
 		41625A9592D89E652C904D2F /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D16298B05E7A51CA94A7BE /* HomeView.swift */; };
+		44936F05F68BBA25389BF78C /* KothalipiKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E134372A0FD96385E6F94EDD /* KothalipiKeyboard.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		853A7695F1F9C15492F5E5EA /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634310D25CBAE34E5BD329E3 /* KeyboardViewController.swift */; };
 		A19A1BAAB2B317A44D1B1DBA /* KothalipiShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BD18114CDA03A3C23C324C /* KothalipiShortcuts.swift */; };
 		A60EFDFFF061B568A32F4BE5 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E24BE7A7742480080949A5 /* AudioRecorder.swift */; };
 		CDCB1C6E833F00735C8B3B77 /* KothalipiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D2B2544147387379076539 /* KothalipiApp.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		BC7D10D030507DD84A7649F3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C32F8CB6623536905A835EC7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 991C7926D56F395588E31FDF;
+			remoteInfo = KothalipiKeyboard;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		489AE5184A5F91C48FA8FC46 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				44936F05F68BBA25389BF78C /* KothalipiKeyboard.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		26E24BE7A7742480080949A5 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		6276C39B378AC7E65593F6CE /* Kothalipi.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Kothalipi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		634310D25CBAE34E5BD329E3 /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		63D2B2544147387379076539 /* KothalipiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KothalipiApp.swift; sourceTree = "<group>"; };
 		70D16298B05E7A51CA94A7BE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		76C4C7CE2A45F01BC1B33543 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		85BD18114CDA03A3C23C324C /* KothalipiShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KothalipiShortcuts.swift; sourceTree = "<group>"; };
+		E134372A0FD96385E6F94EDD /* KothalipiKeyboard.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = KothalipiKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -53,6 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				6276C39B378AC7E65593F6CE /* Kothalipi.app */,
+				E134372A0FD96385E6F94EDD /* KothalipiKeyboard.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,6 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				1605F02741731117EDA82E8A /* Kothalipi */,
+				E26C400AE76BCA7EE44EC732 /* KothalipiKeyboard */,
 				A03A55E7E427FEF48454D38E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -81,6 +112,15 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		E26C400AE76BCA7EE44EC732 /* KothalipiKeyboard */ = {
+			isa = PBXGroup;
+			children = (
+				76C4C7CE2A45F01BC1B33543 /* Info.plist */,
+				634310D25CBAE34E5BD329E3 /* KeyboardViewController.swift */,
+			);
+			path = KothalipiKeyboard;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -89,10 +129,12 @@
 			buildConfigurationList = 5AB7F8722A65E8B47EE04DE7 /* Build configuration list for PBXNativeTarget "Kothalipi" */;
 			buildPhases = (
 				8C1C9806E176C145259CCB0E /* Sources */,
+				489AE5184A5F91C48FA8FC46 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				27DE3E9C855E757CB29ED0E6 /* PBXTargetDependency */,
 			);
 			name = Kothalipi;
 			packageProductDependencies = (
@@ -100,6 +142,23 @@
 			productName = Kothalipi;
 			productReference = 6276C39B378AC7E65593F6CE /* Kothalipi.app */;
 			productType = "com.apple.product-type.application";
+		};
+		991C7926D56F395588E31FDF /* KothalipiKeyboard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8AE69E8FB44B8FE969606622 /* Build configuration list for PBXNativeTarget "KothalipiKeyboard" */;
+			buildPhases = (
+				F2D74C83D1C78BA523134454 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KothalipiKeyboard;
+			packageProductDependencies = (
+			);
+			productName = KothalipiKeyboard;
+			productReference = E134372A0FD96385E6F94EDD /* KothalipiKeyboard.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -127,6 +186,7 @@
 			projectRoot = "";
 			targets = (
 				2FC29D4902BA025E089CBB65 /* Kothalipi */,
+				991C7926D56F395588E31FDF /* KothalipiKeyboard */,
 			);
 		};
 /* End PBXProject section */
@@ -143,7 +203,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F2D74C83D1C78BA523134454 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				853A7695F1F9C15492F5E5EA /* KeyboardViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		27DE3E9C855E757CB29ED0E6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 991C7926D56F395588E31FDF /* KothalipiKeyboard */;
+			targetProxy = BC7D10D030507DD84A7649F3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0BB1C297EAAEA51AD3F9F83A /* Debug */ = {
@@ -152,7 +228,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "কথালিপি";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Kothalipi needs microphone access for voice dictation";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -161,12 +239,34 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kothalipi.mobile;
 				PRODUCT_NAME = Kothalipi;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		23D0A6FBA5F85AB2D5DF0A3E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 2;
+				INFOPLIST_FILE = KothalipiKeyboard/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kothalipi.mobile.keyboard;
+				PRODUCT_NAME = KothalipiKeyboard;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
 		};
 		345F77F6E815D692DA3A7EA8 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -227,7 +327,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.9;
 			};
 			name = Debug;
 		};
@@ -283,7 +383,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.9;
 			};
 			name = Release;
 		};
@@ -293,7 +393,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "কথালিপি";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Kothalipi needs microphone access for voice dictation";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -302,12 +404,34 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kothalipi.mobile;
 				PRODUCT_NAME = Kothalipi;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
+		};
+		F047503B115EC7C385A81C26 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 2;
+				INFOPLIST_FILE = KothalipiKeyboard/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kothalipi.mobile.keyboard;
+				PRODUCT_NAME = KothalipiKeyboard;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -326,6 +450,15 @@
 			buildConfigurations = (
 				0BB1C297EAAEA51AD3F9F83A /* Debug */,
 				798F372E9657448EA8CAE1CB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8AE69E8FB44B8FE969606622 /* Build configuration list for PBXNativeTarget "KothalipiKeyboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F047503B115EC7C385A81C26 /* Debug */,
+				23D0A6FBA5F85AB2D5DF0A3E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

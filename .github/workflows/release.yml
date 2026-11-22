@@ -22,7 +22,7 @@ jobs:
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
           if [ -z "$TAG" ] || [ "$TAG" = "refs/heads/main" ]; then
-            TAG="v0.1.0"
+            TAG="v0.2.0"
           fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
@@ -33,12 +33,11 @@ jobs:
           TAG="${{ steps.get-tag.outputs.tag }}"
           gh release create "$TAG" \
             --title "Kothalipi Mobile $TAG (Android APK & iOS IPA)" \
-            --notes "### Kothalipi Mobile $TAG (Wispr Flow Edition)
-            - **Wispr Flow Floating Bubble (Android):** Dictate from anywhere without switching keyboards.
-            - **Voice Keyboard Extension (Android & iOS):** Voice typing directly in WhatsApp, Messenger, Notes, etc.
-            - **Bangla to English Live Translation:** Speak in Bangla, types out fluent English.
-            - **AI Smart Polish:** Automatically cleans up grammar, punctuation, and filler words.
-            - **Powered by Google Gemini:** Fast and free with personal API keys." \
+            --notes "### Kothalipi Mobile $TAG
+            - **Fixed Gemini API Engine:** Updated to Gemini 2.5 Flash / 2.5 Flash Lite / 2.0 Flash with smart fallback and API key validation.
+            - **Fixed Android Floating Bubble:** Proper Foreground Microphone Service for Android 14+ with optional Accessibility auto-type.
+            - **Upgraded Voice Keyboard (Android & iOS):** 4 modes (Bangla, English, Bangla->EN, Auto), punctuation bar, and real voice dictation on iOS.
+            - **New UI & History:** Voice-reactive waveform, writing styles (Normal/Formal/Casual/Bullets), and searchable dictation history." \
             --draft=false \
             --prerelease=false || echo "Release already exists"
 
@@ -72,10 +71,10 @@ jobs:
       - name: Build Rust Core with cargo-ndk
         run: |
           cd core
+          cargo test
           cargo build --release --bin uniffi-bindgen
           cargo ndk -t arm64-v8a -t x86_64 -o ../android/app/src/main/jniLibs build --release
 
-          # Generate Kotlin bindings
           cargo run --release --bin uniffi-bindgen generate \
             --library ../android/app/src/main/jniLibs/arm64-v8a/libkothalipi_core.so \
             --language kotlin \
@@ -88,21 +87,18 @@ jobs:
 
       - name: Build Android APK
         run: |
+          TAG="${{ needs.create-release.outputs.tag }}"
           cd android
           gradle assembleDebug --stacktrace
-
           mkdir -p ../dist
-          cp app/build/outputs/apk/debug/*.apk ../dist/Kothalipi-v0.1.0.apk 2>/dev/null || \
-          find app/build -name "*.apk" -exec cp {} ../dist/Kothalipi-v0.1.0.apk \;
+          cp app/build/outputs/apk/debug/app-debug.apk "../dist/Kothalipi-${TAG}.apk"
 
       - name: Upload APK to Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="${{ needs.create-release.outputs.tag }}"
-          if [ -f "dist/Kothalipi-v0.1.0.apk" ]; then
-            gh release upload "$TAG" dist/Kothalipi-v0.1.0.apk --clobber
-          fi
+          gh release upload "$TAG" "dist/Kothalipi-${TAG}.apk" --clobber
 
   build-ios:
     needs: create-release
@@ -111,37 +107,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-ios,aarch64-apple-ios-sim
+      - name: Install XcodeGen
+        run: brew install xcodegen
 
-      - name: Build Rust Core for iOS
+      - name: Generate & Build iOS App
         run: |
-          cd core
-          cargo build --release --bin uniffi-bindgen
-          cargo build --release --target aarch64-apple-ios
-          cargo build --release --target aarch64-apple-ios-sim
+          TAG="${{ needs.create-release.outputs.tag }}"
+          cd ios
+          xcodegen generate
+          xcodebuild -project Kothalipi.xcodeproj \
+            -scheme Kothalipi \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
 
-          mkdir -p ../ios/Kothalipi/Generated
-          cargo run --release --bin uniffi-bindgen generate \
-            --library target/aarch64-apple-ios/release/libkothalipi_core.dylib 2>/dev/null || true \
-            --language swift \
-            --out-dir ../ios/Kothalipi/Generated 2>/dev/null || true
-
-      - name: Package iOS IPA Archive
-        run: |
-          mkdir -p dist/Payload
-          cp -r ios/Kothalipi dist/Payload/Kothalipi.app 2>/dev/null || mkdir -p dist/Payload/Kothalipi.app
-          cd dist
-          zip -r Kothalipi-v0.1.0.ipa Payload
-          cd ..
+          mkdir -p ../dist/Payload
+          cp -r build/Build/Products/Release-iphoneos/Kothalipi.app ../dist/Payload/
+          cd ../dist
+          zip -r "Kothalipi-${TAG}.ipa" Payload
 
       - name: Upload IPA to Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="${{ needs.create-release.outputs.tag }}"
-          if [ -f "dist/Kothalipi-v0.1.0.ipa" ]; then
-            gh release upload "$TAG" dist/Kothalipi-v0.1.0.ipa --clobber
-          fi
+          gh release upload "$TAG" "dist/Kothalipi-${TAG}.ipa" --clobber

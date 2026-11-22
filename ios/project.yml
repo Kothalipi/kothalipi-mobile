@@ -4,7 +4,7 @@ options:
 settings:
   base:
     IPHONEOS_DEPLOYMENT_TARGET: "16.0"
-    SWIFT_VERSION: "5.0"
+    SWIFT_VERSION: "5.9"
 targets:
   Kothalipi:
     type: application
@@ -12,13 +12,48 @@ targets:
     deploymentTarget: "16.0"
     sources:
       - path: Kothalipi
+    dependencies:
+      - target: KothalipiKeyboard
     settings:
       base:
         PRODUCT_NAME: Kothalipi
         PRODUCT_BUNDLE_IDENTIFIER: com.kothalipi.mobile
+        MARKETING_VERSION: "0.2.0"
+        CURRENT_PROJECT_VERSION: "2"
+        INFOPLIST_KEY_CFBundleDisplayName: "কথালিপি"
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "Kothalipi needs microphone access for voice dictation"
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGN_IDENTITY: ""
+
+  KothalipiKeyboard:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: KothalipiKeyboard
+    info:
+      path: KothalipiKeyboard/Info.plist
+      properties:
+        CFBundleDisplayName: "কথালিপি কীবোর্ড"
+        CFBundleShortVersionString: "0.2.0"
+        CFBundleVersion: "2"
+        NSMicrophoneUsageDescription: "Kothalipi Keyboard needs microphone access for voice typing"
+        NSExtension:
+          NSExtensionAttributes:
+            IsASCIICapable: false
+            PrefersRightToLeft: false
+            PrimaryLanguage: bn-BD
+            RequestsOpenAccess: true
+          NSExtensionPointIdentifier: com.apple.keyboard-service
+          NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).KeyboardViewController"
+    settings:
+      base:
+        PRODUCT_NAME: KothalipiKeyboard
+        PRODUCT_BUNDLE_IDENTIFIER: com.kothalipi.mobile.keyboard
+        MARKETING_VERSION: "0.2.0"
+        CURRENT_PROJECT_VERSION: "2"
         CODE_SIGNING_ALLOWED: NO
         CODE_SIGN_IDENTITY: ""

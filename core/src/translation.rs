@@ -1,4 +1,5 @@
 use std::time::Duration;
+use crate::cloud_stt::{extract_candidate_text, GEMINI_MODELS};
 use crate::EngineError;
 
 /// Checks if string contains Bengali script characters
@@ -6,7 +7,7 @@ pub fn contains_bangla(text: &str) -> bool {
     text.chars().any(|c| ('\u{0980}'..='\u{09FF}').contains(&c))
 }
 
-/// Translates spoken Bengali text into natural, fluent English using Gemini Flash Lite
+/// Translates spoken Bengali text into natural, fluent English using Gemini
 pub async fn translate_bangla_to_english(
     api_key: &str,
     text: &str,
@@ -16,7 +17,8 @@ pub async fn translate_bangla_to_english(
         return Ok(trimmed.to_string());
     }
 
-    if api_key.trim().is_empty() {
+    let trimmed_key = api_key.trim();
+    if trimmed_key.is_empty() {
         return Err(EngineError::BadApiKey {
             detail: "Gemini API key is required for translation".to_string(),
         });
@@ -34,39 +36,48 @@ pub async fn translate_bangla_to_english(
     });
 
     let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(12))
+        .timeout(Duration::from_secs(15))
         .build()
         .map_err(|e| EngineError::NetworkError { detail: e.to_string() })?;
 
-    let models = [
-        "gemini-flash-lite-latest",
-        "gemini-3.5-flash-lite",
-        "gemini-3.8-flash",
-        "gemini-flash-latest",
-    ];
     let mut last_err = String::new();
+    let mut saw_rate_limit = false;
 
-    for model in models {
+    for model in GEMINI_MODELS {
         let url = format!(
             "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent?key={}",
-            model, api_key
+            model, trimmed_key
         );
 
         let resp = client.post(&url).json(&payload).send().await;
         match resp {
             Ok(r) if r.status().is_success() => {
-                let json: serde_json::Value = r.json().await.map_err(|e| EngineError::NetworkError { detail: e.to_string() })?;
-                if let Some(t) = json["candidates"][0]["content"]["parts"][0]["text"].as_str() {
-                    return Ok(t.trim().to_string());
+                if let Ok(json) = r.json::<serde_json::Value>().await {
+                    if let Some(t) = extract_candidate_text(&json) {
+                        return Ok(t);
+                    }
                 }
             }
             Ok(r) => {
-                last_err = format!("HTTP {}", r.status());
+                let code = r.status().as_u16();
+                if code == 401 || code == 403 {
+                    return Err(EngineError::BadApiKey {
+                        detail: format!("HTTP {}", code),
+                    });
+                }
+                if code == 429 {
+                    saw_rate_limit = true;
+                }
+                last_err = format!("{} HTTP {}", model, code);
             }
             Err(e) => {
                 last_err = e.to_string();
             }
         }
+    }
+
+    if saw_rate_limit {
+        return Err(EngineError::RateLimitExceeded);
     }
 
     Err(EngineError::NetworkError {
